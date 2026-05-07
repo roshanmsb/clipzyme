@@ -154,3 +154,23 @@ Thumbs.db
 lightning_logs/
 wandb/
 tensorboard/
+
+# EMULaToR wrapper generated artifacts
+emulator_bench/runs/
+emulator_bench/cache/
+emulator_bench/**/*.log
+emulator_bench/**/*.args
+emulator_bench/**/*.ckpt
+emulator_bench/**/*.pt
+emulator_bench/**/*.p
+emulator_bench/**/*.pkl
+emulator_bench/**/*.zip
+emulator_bench/**/*.tar
+emulator_bench/**/*.tar.gz
+logs/
+snapshot/
+snapshots/
+*.args
+*.ckpt
+*.pt
+clipzyme_model.zip

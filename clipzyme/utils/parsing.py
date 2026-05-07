@@ -258,6 +258,12 @@ def get_parser():
         help="The replicate number for the experiment for running same experiments multiple times",
     )
     parser.add_argument(
+        "--seed",
+        type=int,
+        default=0,
+        help="Random seed for training, validation, and test execution",
+    )
+    parser.add_argument(
         "--shuffle_eval_loader",
         action="store_true",
         default=False,

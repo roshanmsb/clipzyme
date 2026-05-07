@@ -191,6 +191,7 @@ def eval(model, logger, args):
 
 if __name__ == "__main__":
     args = parse_args()
+    pl.seed_everything(args.seed, workers=True)
     model, logger = train(args)
 
     if args.dev or args.test or args.eval_on_train:

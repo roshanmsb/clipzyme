@@ -83,8 +83,12 @@ class EnzymeMap(AbstractDataset):
 
         self.valid_ec2uniprot = defaultdict(set)
 
-        self.ec2uniprot = pickle.load(open("files/ec2uniprot.p", "rb"))
-        self.uniprot2sequence = pickle.load(open("files/uniprot2sequence.p", "rb"))
+        ec2uniprot_path = getattr(args, "ec2uniprot_path", "files/ec2uniprot.p")
+        uniprot2sequence_path = getattr(
+            args, "uniprot2sequence_path", "files/uniprot2sequence.p"
+        )
+        self.ec2uniprot = pickle.load(open(ec2uniprot_path, "rb"))
+        self.uniprot2sequence = pickle.load(open(uniprot2sequence_path, "rb"))
         self.uniprot2sequence_len = {
             k: 0 if v is None else len(v) for k, v in self.uniprot2sequence.items()
         }
@@ -375,7 +379,10 @@ class EnzymeMap(AbstractDataset):
         dataset = []
         for sample in processed_dataset:
             # check right split
-            if self.to_split[sample["rule_id"]] != split_group:
+            if self.args.assign_splits:
+                if self.to_split[sample["rule_id"]] != split_group:
+                    continue
+            elif sample.get("split") != split_group:
                 continue
             dataset.append(sample)
         return dataset
@@ -626,6 +633,18 @@ class EnzymeMap(AbstractDataset):
             type=str,
             default="1",
             help="enzyme map version number",
+        )
+        parser.add_argument(
+            "--ec2uniprot_path",
+            type=str,
+            default="files/ec2uniprot.p",
+            help="path to EC-to-UniProt pickle",
+        )
+        parser.add_argument(
+            "--uniprot2sequence_path",
+            type=str,
+            default="files/uniprot2sequence.p",
+            help="path to UniProt-to-sequence pickle",
         )
         parser.add_argument(
             "--remove_duplicate_reactions",
