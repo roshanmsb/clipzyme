@@ -177,13 +177,19 @@ def _encode_protein_ec_centers(
     batch_size: int,
 ) -> tuple[list[str], object]:
     import torch
-    from tqdm import tqdm
+    try:
+        from src.utils.rich_progress import progress
+    except ModuleNotFoundError:
+        import sys
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+        from src.utils.rich_progress import progress
     from clipzyme.utils.loading import default_collate
 
     sums: dict[str, torch.Tensor] = {}
     counts: dict[str, int] = defaultdict(int)
     with torch.no_grad():
-        for start in tqdm(range(0, len(proteins), batch_size), desc="CARE protein centers"):
+        for start in progress(range(0, len(proteins), batch_size), desc="CARE protein centers"):
             batch_records = proteins[start : start + batch_size]
             batch = default_collate(
                 [
@@ -213,14 +219,20 @@ def _encode_reactions(
     batch_size: int,
 ):
     import torch
-    from tqdm import tqdm
+    try:
+        from src.utils.rich_progress import progress
+    except ModuleNotFoundError:
+        import sys
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+        from src.utils.rich_progress import progress
     from clipzyme.utils.loading import default_collate
     from clipzyme.utils.screening import process_mapped_reaction
 
     encoded = []
     ids = []
     with torch.no_grad():
-        for start in tqdm(range(0, len(reactions), batch_size), desc="CARE reactions"):
+        for start in progress(range(0, len(reactions), batch_size), desc="CARE reactions"):
             batch_records = reactions[start : start + batch_size]
             batch_items = []
             for record in batch_records:
