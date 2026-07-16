@@ -10,7 +10,13 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
+try:
+    from src.utils.rich_progress import progress, write
+except ModuleNotFoundError:
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+    from src.utils.rich_progress import progress, write
 
 from .utils import (
     DEFAULT_CACHE_ROOT,
@@ -179,7 +185,7 @@ def load_clipzyme_records(
         source_df = source_df.iloc[sampled_indices]
         limit_sampling = True
     rows_scanned = 0
-    for row in tqdm(
+    for row in progress(
         source_df.itertuples(index=True),
         total=len(source_df),
         desc=f"{split_name} rows",
@@ -459,7 +465,7 @@ def populate_atom_map_cache(
     missing = []
     hits = 0
     failed_cached = 0
-    for row in tqdm(
+    for row in progress(
         reaction_rows.itertuples(index=False),
         total=len(reaction_rows),
         desc="atom-map cache scan",
@@ -510,7 +516,7 @@ def populate_atom_map_cache(
             ) from exc
 
         mapper = RXNMapper()
-        for start in tqdm(range(0, len(missing), batch_size), desc="RXNMapper batches"):
+        for start in progress(range(0, len(missing), batch_size), desc="RXNMapper batches"):
             batch = missing[start : start + batch_size]
             smiles_batch = [record["reaction_smiles"] for record in batch]
             try:
@@ -583,7 +589,7 @@ def materialize_clipzyme_inputs(
     for split, frame in split_frames.items():
         usable_rows = []
         map_failed_rows = 0
-        for record in tqdm(
+        for record in progress(
             frame.to_dict("records"),
             total=len(frame),
             desc=f"{split} Clipzyme rows",
